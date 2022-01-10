@@ -1,15 +1,10 @@
 from dataclasses import dataclass
-from typing import Any
-# первый раз случайно нажал на телефоне, не нашел как отменить. Извиняюсь.
 
 
 @dataclass
 class InfoMessage:
     """Информационное сообщение о тренировке."""
-    training_type: Any
-    # Не нашел лучшего решения,
-    # Training не определен еще.
-    # Есть более правильный вариант?
+    training_type: str
     duration: float
     distance: float
     speed: float
@@ -26,7 +21,6 @@ class InfoMessage:
 
 
 @dataclass
-# Крутая фишка !!! спасибо
 class Training:
     """Базовый класс тренировки."""
     LEN_STEP = 0.65
@@ -45,7 +39,6 @@ class Training:
         """Получить среднюю скорость движения."""
         if self.duration > 0:
             return self.get_distance() / self.duration
-        # читаемость кода не падает без else ?
         return 0
 
     def get_spent_calories(self) -> float:
@@ -58,7 +51,11 @@ class Training:
         distance = self.get_distance()
         speed = self.get_mean_speed()
         calories = self.get_spent_calories()
-        return InfoMessage(self, self.duration, distance, speed, calories)
+        return InfoMessage(self.__class__.__name__,
+                           self.duration,
+                           distance,
+                           speed,
+                           calories)
 
 
 @dataclass
@@ -133,12 +130,15 @@ class Swimming(Training):
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    # Крутая фишка !!! спасибо
+    def return_value_error(*data):
+        raise ValueError(f'Ключа {workout_type} нет,'
+                         f'ожидаемые ключи: SWM, RUN, WLK')
+
     return {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
-    }.get(workout_type, Training)(*data)
+    }.get(workout_type, return_value_error)(*data)
 
 
 def main(training: Training) -> None:
