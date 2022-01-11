@@ -130,7 +130,9 @@ class Swimming(Training):
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    def return_value_error(*data):
+
+    def return_value_error(*data: list) -> Training:
+        """Обработка ошибки не верного ключа"""
         raise ValueError(f'Ключа {workout_type} нет,'
                          f'ожидаемые ключи: SWM, RUN, WLK')
 
